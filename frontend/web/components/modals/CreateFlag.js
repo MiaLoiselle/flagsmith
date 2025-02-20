@@ -573,7 +573,6 @@ const CreateFlag = class extends Component {
 
     const date = moment().toISOString()
 
-    console.log('data', date)
     getChangeRequests(
       getStore(),
       {
@@ -622,9 +621,6 @@ const CreateFlag = class extends Component {
     const noPermissions = this.props.noPermissions
     let regexValid = true
     const metadataEnable = Utils.getPlansPermission('METADATA')
-
-    const { changeRequests, scheduledChangeRequests } = this.state
-    console.log({ changeRequests, out: true, scheduledChangeRequests })
 
     try {
       if (!isEdit && name && regex) {
@@ -967,6 +963,7 @@ const CreateFlag = class extends Component {
                       : 'New Change Request',
                     <ChangeRequestModal
                       showAssignees={is4Eyes}
+                      isScheduledChange={schedule}
                       changeRequest={this.props.changeRequest}
                       onSave={({
                         approvals,
