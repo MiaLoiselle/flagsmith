@@ -275,6 +275,7 @@ const Utils = Object.assign({}, require('./base/_utils'), {
     }
   },
   getFlagsmithHasFeature(key: string) {
+    if (key === 'feature_health') return true
     return flagsmith.hasFeature(key)
   },
   getFlagsmithJSONValue(key: string, defaultValue: any) {

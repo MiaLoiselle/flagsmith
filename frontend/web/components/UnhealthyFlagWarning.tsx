@@ -33,19 +33,22 @@ const UnhealthyFlagWarning: FC<UnhealthyFlagWarningType> = ({
   )
     return null
 
+  const color = Constants.tagColors[16]
+
   return (
     <Tooltip
       title={
-        <div className='fs-caption' style={{ color: Constants.tagColors[16] }}>
-          {/* TODO: Provider info and link to issue will be provided by reason via the API */}
-          {latestHealthEvent.reason}
-          {latestHealthEvent.reason && (
+        <div className='fs-caption' style={{ color }}>
+          <div>
+            This feature has {healthEvents?.length} active alert
+            {healthEvents?.length > 1 ? 's' : ''}. Check them in the 'Feature
+            Health' tab.
             <IonIcon
               style={{ marginBottom: -2 }}
               className='ms-1'
               icon={warning}
             />
-          )}
+          </div>
         </div>
       }
     >
