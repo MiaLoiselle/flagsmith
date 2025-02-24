@@ -148,6 +148,14 @@ const FeatureRow: FC<FeatureRowProps> = ({
     confirmToggle()
   }
 
+  const closeModal = () => {
+    // Clear the URL parameters
+    history.replace({
+      pathname: document.location.pathname,
+      search: '', // Remove all query params
+    })
+  }
+
   const editFeature = (
     projectFlag: ProjectFlag,
     environmentFlag?: FeatureState,
@@ -192,9 +200,7 @@ const FeatureRow: FC<FeatureRowProps> = ({
         flagId={environmentFlag?.id}
       />,
       'side-modal create-feature-modal',
-      () => {
-        history.replace({}, '', `${document.location.pathname}`)
-      },
+      closeModal,
     )
   }
 
