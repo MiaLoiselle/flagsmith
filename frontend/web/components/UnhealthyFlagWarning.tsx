@@ -6,10 +6,12 @@ import { warning } from 'ionicons/icons'
 
 type UnhealthyFlagWarningType = {
   featureUnhealthyEvents?: HealthEvent[]
+  onClick?: (e?: React.MouseEvent) => void
 }
 
 const UnhealthyFlagWarning: FC<UnhealthyFlagWarningType> = ({
   featureUnhealthyEvents,
+  onClick,
 }) => {
   if (!featureUnhealthyEvents?.length) return null
 
@@ -18,7 +20,7 @@ const UnhealthyFlagWarning: FC<UnhealthyFlagWarningType> = ({
   return (
     <Tooltip
       title={
-        <div className='fs-caption' style={{ color }}>
+        <div className='fs-caption' style={{ color }} onClick={onClick}>
           <div>
             This feature has {featureUnhealthyEvents?.length} active alert
             {featureUnhealthyEvents?.length > 1 ? 's' : ''}. Check them in the

@@ -198,6 +198,14 @@ const FeatureRow: FC<FeatureRowProps> = ({
     )
   }
 
+  const openFeatureHealthTab = (id: number) => {
+    editFeature(
+      projectFlag,
+      environmentFlags?.[id],
+      Constants.featurePanelTabs.FEATURE_HEALTH,
+    )
+  }
+
   const isReadOnly = readOnly || Utils.getFlagsmithHasFeature('read_only_mode')
   const isFeatureHealthEnabled = Utils.getFlagsmithHasFeature('feature_health')
 
@@ -244,13 +252,9 @@ const FeatureRow: FC<FeatureRowProps> = ({
       key={id}
       space
       data-test={`feature-item-${index}`}
-      onClick={() => {
-        const tab =
-          isFeatureHealthEnabled && featureUnhealthyEvents?.length
-            ? Constants.featurePanelTabs.FEATURE_HEALTH
-            : undefined
-        !isReadOnly && editFeature(projectFlag, environmentFlags?.[id], tab)
-      }}
+      onClick={() =>
+        !isReadOnly && editFeature(projectFlag, environmentFlags?.[id])
+      }
     >
       <Flex className='table-column'>
         <Row>
@@ -329,6 +333,10 @@ const FeatureRow: FC<FeatureRowProps> = ({
               {isFeatureHealthEnabled && !!isCompact && (
                 <UnhealthyFlagWarning
                   featureUnhealthyEvents={featureUnhealthyEvents}
+                  onClick={(e) => {
+                    e?.stopPropagation()
+                    openFeatureHealthTab(id)
+                  }}
                 />
               )}
             </Row>
@@ -336,6 +344,10 @@ const FeatureRow: FC<FeatureRowProps> = ({
             {isFeatureHealthEnabled && !isCompact && (
               <UnhealthyFlagWarning
                 featureUnhealthyEvents={featureUnhealthyEvents}
+                onClick={(e) => {
+                  e?.stopPropagation()
+                  openFeatureHealthTab(id)
+                }}
               />
             )}
             {description && !isCompact && (
