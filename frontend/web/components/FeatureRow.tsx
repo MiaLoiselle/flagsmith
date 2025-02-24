@@ -1,4 +1,4 @@
-import React, { FC, useEffect } from 'react'
+import React, { FC, useEffect, useMemo } from 'react'
 import TagValues from './tags/TagValues'
 import ConfirmToggleFeature from './modals/ConfirmToggleFeature'
 import ConfirmRemoveFeature from './modals/ConfirmRemoveFeature'
@@ -30,6 +30,7 @@ import Switch from './Switch'
 import AccountStore from 'common/stores/account-store'
 import CondensedFeatureRow from './CondensedFeatureRow'
 import { RouterChildContext } from 'react-router'
+import { useGetHealthEventsQuery } from 'common/services/useHealthEvents'
 
 interface FeatureRowProps {
   disableControls?: boolean
@@ -76,6 +77,11 @@ const FeatureRow: FC<FeatureRowProps> = ({
 }) => {
   const protectedTags = useProtectedTags(projectFlag, projectId)
 
+  const { data: healthEvents } = useGetHealthEventsQuery(
+    { projectId: String(projectFlag.project) },
+    { refetchOnFocus: false, skip: !projectFlag?.project },
+  )
+
   useEffect(() => {
     const { feature } = Utils.fromParam()
     const { id } = projectFlag
@@ -85,6 +91,15 @@ const FeatureRow: FC<FeatureRowProps> = ({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [environmentFlags, projectFlag])
+
+  const featureUnhealthyEvents = useMemo(
+    () =>
+      healthEvents?.filter(
+        (event) =>
+          event.type === 'UNHEALTHY' && event.feature === projectFlag.id,
+      ),
+    [healthEvents, projectFlag],
+  )
 
   const copyFeature = () => {
     Utils.copyToClipboard(projectFlag.name)
@@ -145,12 +160,10 @@ const FeatureRow: FC<FeatureRowProps> = ({
     API.trackEvent(Constants.events.VIEW_FEATURE)
     const tabValue = tab || Utils.fromParam().tab || 'value'
 
-    history.replace(
-      {},
-      '',
-      `${document.location.pathname}?feature=${projectFlag.id}&tab=${tabValue}`,
-    )
-
+    history.replace({
+      pathname: document.location.pathname,
+      search: `?feature=${projectFlag.id}&tab=${tabValue}`,
+    })
     openModal(
       <Row>
         {permission ? 'Edit Feature' : 'Feature'}: {projectFlag.name}
@@ -166,6 +179,9 @@ const FeatureRow: FC<FeatureRowProps> = ({
       </Row>,
       <CreateFlagModal
         hideTagsByType={['UNHEALTHY']}
+        hasUnhealthyEvents={
+          isFeatureHealthEnabled && featureUnhealthyEvents?.length
+        }
         history={history}
         environmentId={environmentId}
         projectId={projectId}
@@ -203,6 +219,9 @@ const FeatureRow: FC<FeatureRowProps> = ({
         environmentFlags={environmentFlags}
         permission={permission}
         editFeature={editFeature}
+        hasUnhealthyEvents={
+          isFeatureHealthEnabled && featureUnhealthyEvents?.length
+        }
         onChange={onChange}
         style={style}
         className={className}
@@ -225,9 +244,13 @@ const FeatureRow: FC<FeatureRowProps> = ({
       key={id}
       space
       data-test={`feature-item-${index}`}
-      onClick={() =>
-        !isReadOnly && editFeature(projectFlag, environmentFlags?.[id])
-      }
+      onClick={() => {
+        const tab =
+          isFeatureHealthEnabled && featureUnhealthyEvents?.length
+            ? Constants.featurePanelTabs.FEATURE_HEALTH
+            : undefined
+        !isReadOnly && editFeature(projectFlag, environmentFlags?.[id], tab)
+      }}
     >
       <Flex className='table-column'>
         <Row>
@@ -304,12 +327,16 @@ const FeatureRow: FC<FeatureRowProps> = ({
               </TagValues>
               {!!isCompact && <StaleFlagWarning projectFlag={projectFlag} />}
               {isFeatureHealthEnabled && !!isCompact && (
-                <UnhealthyFlagWarning projectFlag={projectFlag} />
+                <UnhealthyFlagWarning
+                  featureUnhealthyEvents={featureUnhealthyEvents}
+                />
               )}
             </Row>
             {!isCompact && <StaleFlagWarning projectFlag={projectFlag} />}
             {isFeatureHealthEnabled && !isCompact && (
-              <UnhealthyFlagWarning projectFlag={projectFlag} />
+              <UnhealthyFlagWarning
+                featureUnhealthyEvents={featureUnhealthyEvents}
+              />
             )}
             {description && !isCompact && (
               <div

@@ -437,6 +437,7 @@ const Constants = {
 }`,
   featurePanelTabs: {
     ANALYTICS: 'analytics',
+    FEATURE_HEALTH: 'feature-health',
     HISTORY: 'history',
     IDENTITY_OVERRIDES: 'identity-overrides',
     LINKS: 'links',
