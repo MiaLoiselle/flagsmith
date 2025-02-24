@@ -148,14 +148,6 @@ const FeatureRow: FC<FeatureRowProps> = ({
     confirmToggle()
   }
 
-  const closeModal = () => {
-    // Clear the URL parameters
-    history.replace({
-      pathname: document.location.pathname,
-      search: '', // Remove all query params
-    })
-  }
-
   const editFeature = (
     projectFlag: ProjectFlag,
     environmentFlag?: FeatureState,
@@ -168,10 +160,11 @@ const FeatureRow: FC<FeatureRowProps> = ({
     API.trackEvent(Constants.events.VIEW_FEATURE)
     const tabValue = tab || Utils.fromParam().tab || 'value'
 
-    history.replace({
-      pathname: document.location.pathname,
-      search: `?feature=${projectFlag.id}&tab=${tabValue}`,
-    })
+    history.replace(
+      {},
+      '',
+      `${document.location.pathname}?feature=${projectFlag.id}&tab=${tabValue}`,
+    )
     openModal(
       <Row>
         {permission ? 'Edit Feature' : 'Feature'}: {projectFlag.name}
@@ -200,7 +193,9 @@ const FeatureRow: FC<FeatureRowProps> = ({
         flagId={environmentFlag?.id}
       />,
       'side-modal create-feature-modal',
-      closeModal,
+      () => {
+        history.replace({}, '', `${document.location.pathname}`)
+      },
     )
   }
 
