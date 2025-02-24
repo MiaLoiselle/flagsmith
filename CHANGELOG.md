@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.164.0](https://github.com/Flagsmith/flagsmith/compare/v2.163.0...v2.164.0) (2025-02-24)
+
+
+### Features
+
+* Add separate liveness and readiness checks ([#5151](https://github.com/Flagsmith/flagsmith/issues/5151)) ([27a69a9](https://github.com/Flagsmith/flagsmith/commit/27a69a95b4a52262a665e63e97d3f342d4492f1b))
+
 ## [2.163.0](https://github.com/Flagsmith/flagsmith/compare/v2.162.0...v2.163.0) (2025-02-21)
 
 
